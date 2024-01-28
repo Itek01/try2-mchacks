@@ -1,0 +1,37 @@
+  .menu {
+    text-align: center;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Adds space between buttons */
+    background-color: #8ecae6;
+  }
+  
+  .menu button {
+    background-color: #ff6b6b; /* Bright red, characteristic of Fall Guys */
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .menu button:hover {
+    transform: scale(1.1); /* Scale up button on hover for a 'pop' effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .menu button:active {
+    transform: scale(0.95); /* Scale down button when clicked */
+  }
+  
+  .multiplayerButton {
+    background-color: #4d96ff; /* Another bright color for contrast */
+  }
+  

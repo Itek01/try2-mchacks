@@ -3,6 +3,9 @@ import About from './Pages/About';
 import Home from './Pages/Home';
 import Model from './Pages/Model';
 import { WebSocketDemo } from './Pages/WebSocketDemo';
+import Menu from './Pages/Menu';
+import SoloGame from './Pages/SoloGame';
+import TrackChooser from './Pages/TrackChooser';
 
 function App() {
   return (
@@ -12,6 +15,10 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/Model" element={<Model />} />
         <Route path="/WebSocketDemo" element={<WebSocketDemo />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/sologame/:trackId" element={<SoloGame/>} />
+        <Route path="/choosetrack" element={<TrackChooser/>} />
+
       </Routes>
     </Router>
   );

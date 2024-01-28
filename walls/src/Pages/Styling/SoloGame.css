@@ -1,0 +1,75 @@
+.sologame {
+    font-family: 'Poppins', sans-serif; /* Fall Guys uses a playful font like Poppins */
+    text-align: center; /* Center align the content */
+    background-color: #8ecae6; /* Bright sky blue background, typical for game interfaces */
+    height: 100vh; /* Full viewport height */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.sologame .wall {
+    /* background-color: #ffafcc; */
+    border-radius: 20px; /* Rounded corners */
+    transition: width 0.1s ease-in-out, height 0.1s ease-in-out; /* Smooth transitions for size changes */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* A subtle shadow for depth */
+    background-size: cover; /* or contain, depending on your needs */
+    background-position: center;
+    background-repeat: no-repeat;
+    min-width: 50px; /* Minimum width so the image can be visible */
+  min-height: 50px;
+}
+
+.sologame button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    background-color: #ffcb77; /* A sunny button color */
+    color: #fff;
+    border: none;
+    border-radius: 50px; /* Fully rounded edges for a pill-shaped button */
+    cursor: pointer;
+    transition: background-color 0.2s; /* Transition for a hover effect */
+    outline: none;
+}
+
+.sologame button:hover {
+    background-color: #ffd31d; /* A slightly darker color on hover */
+}
+
+@keyframes pop {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.countdown {
+    font-size: 3rem;
+    color: #fff;
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: pop 1s infinite; /* Apply the pop animation continuously */
+}
+
+.countdown.zero {
+    font-size: 3rem;
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: pop 0.5s infinite;
+    animation: none;
+    color: #ff0000; /* Change text color to red */
+}
+
+.controls {
+    position: absolute; /* Position the controls independently */
+    bottom: 40px; /* Position at the bottom of the game area */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for exact centering */
+    z-index: 10; /* Ensure it's above other elements if needed */
+}
