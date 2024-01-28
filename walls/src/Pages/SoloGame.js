@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import styled from 'styled-components';
 import { Rings } from 'react-loader-spinner';
+import Webcam from 'react-webcam';
+import Model from './Model';
 
 const Pose = styled.div`
     font-size: 3rem;
@@ -19,7 +21,6 @@ const SoloGame = () => {
     const [isGrowing, setIsGrowing] = useState(true);
     const [countdown, setCountdown] = useState(10);
     const WS_URL = "ws://127.0.0.1:5555";
-    const [message, setMessage] = useState('');
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL);
     const [currentPose, setCurrentPose] = useState('');
     const [poseList, setPoseList] = useState(["T Pose", "T Pose + Knee", "Flex Pose"]);
@@ -29,6 +30,7 @@ const SoloGame = () => {
     const audioRef = useRef();
     const [initialWallCreated, setInitialWallCreated] = useState(false);
     const numImage = 2;
+    const webcamRef = useRef(null);
 
     const toggleMusic = () => {
         if (audioRef.current.paused) {
@@ -119,28 +121,40 @@ const SoloGame = () => {
     return (
         <div className="sologame">
             {
-                readyState === ReadyState.OPEN
+                // readyState === ReadyState.OPEN
+                true
                     ? 
                     <>
-                                <div className="countdown">{countdown}</div>
-            <Pose success={success}>{currentPose}</Pose>
-            <div className="walls-container">
-                {walls.map((wall, index) => (
-                    <div
-                        key={wall.id}
-                        className="wall"
-                        style={{
-                            width: wall.size,
-                            height: wall.size / 1.5,
-                            backgroundImage: `url(${wall.imageId})`
-                        }}
-                    ></div>
-                ))}
-            </div>
-            <div className="controls">
-                <audio ref={audioRef} src={require(`./Sounds/Track${trackId}.mp3`)} preload="auto" loop onError={(e) => console.log('Error loading audio:', e)} />
-                <button onClick={toggleMusic}>Toggle Music</button>
-            </div>
+                    <div className="countdown">{countdown}</div>
+                        <Pose success={success}>{currentPose}</Pose>
+                        <div className="walls-container">
+                            {walls.map((wall, index) => (
+                                <div
+                                    key={wall.id}
+                                    className="wall"
+                                    style={{
+                                        zIndex:2,
+                                        width: wall.size,
+                                        height: wall.size / 1.5,
+                                        backgroundImage: `url(${wall.imageId})`
+                                    }}
+                                >
+                                </div>
+                            ))}
+                            
+                        </div>
+                        <Webcam
+                            style={{
+                                position: 'absolute',
+                                zIndex: '-1',
+                                width: '100%',
+                                height: '100%',
+                            }}
+                        />
+                        <div className="controls">
+                            <audio ref={audioRef} src={require(`./Sounds/Track${trackId}.mp3`)} preload="auto" loop onError={(e) => console.log('Error loading audio:', e)} />
+                            <button onClick={toggleMusic}>Toggle Music</button>
+                        </div>
                     </>
                     : 
                     <Rings

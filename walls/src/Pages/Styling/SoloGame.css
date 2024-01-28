@@ -1,7 +1,7 @@
 .sologame {
     font-family: 'Poppins', sans-serif; /* Fall Guys uses a playful font like Poppins */
     text-align: center; /* Center align the content */
-    background-color: #8ecae6; /* Bright sky blue background, typical for game interfaces */
+    /* background-color: #8ecae6; Bright sky blue background, typical for game interfaces */
     height: 100vh; /* Full viewport height */
     padding: 20px;
     display: flex;
@@ -19,7 +19,8 @@
     background-position: center;
     background-repeat: no-repeat;
     min-width: 50px; /* Minimum width so the image can be visible */
-  min-height: 50px;
+    min-height: 50px;
+    z-index: 10;
 }
 
 .sologame button {
