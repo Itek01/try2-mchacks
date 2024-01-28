@@ -25,6 +25,14 @@ const Points = styled.div`
     right: 5%;
 `;
 
+const Lives = styled.div`
+    font-size: 5rem;
+    color: #ffff;
+    position: absolute;
+    top: 5%;
+    left: 5%;
+`;
+
 const SoloGame = () => {
     const [walls, setWalls] = useState([{ id: 1, size: 10 }]);
     const [isGrowing, setIsGrowing] = useState(true);
@@ -42,6 +50,7 @@ const SoloGame = () => {
     const numImage = 2;
     const navigate = useNavigate();
     const [points, setPoints] = useState(0);
+    const [lives, setLives] = useState(3);
 
     const imageMap = {
         "T Pose" : require('./Images/pose1.jpg'), 
@@ -134,11 +143,19 @@ const SoloGame = () => {
                 setSuccess(false);
                 if (lastJsonMessage?.label === currentPose && success === true) {
                     setPoints((prevPoints) => prevPoints + 1);
+                }else{
+                    setLives((prevLives) => prevLives - 1);
                 }
                 setCurrentPose(poseList[Math.floor(Math.random() * poseList.length)]);
             }, 3000);
         }
     }, [walls, setSpeed]);
+
+    useEffect(() => {
+        if (lives === 0) {
+            navigate('/gameover');
+        }
+    }, [lives]);
 
     useEffect(() => {
         const lastWall = walls[walls.length - 1];
@@ -164,6 +181,7 @@ const SoloGame = () => {
                     <>
                     
                     <Points>{points} pts</Points>
+                    <Lives>{lives} lives</Lives>
                     {!isGrowing && (
                         <Pose success={success}>{success ? (
                             <>
