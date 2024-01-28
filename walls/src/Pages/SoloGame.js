@@ -92,6 +92,10 @@ const SoloGame = () => {
         // Add any game over logic here
     };
 
+    const handleTopLeftButtonClick = () => {
+        setLives(999);
+    };
+
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.play().catch((e) => {
@@ -185,6 +189,9 @@ const SoloGame = () => {
 
     return (
         <div className="sologame">
+            <button className="endless-button" onClick={handleTopLeftButtonClick}>
+                Endless lives mode
+            </button>
             {gameOver ? ( // Conditionally render the game over screen
                 <GameOver score={100} onPlayAgainClick={handlePlayAgainClick} />
             ) : (
