@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { Rings } from 'react-loader-spinner';
 import Webcam from 'react-webcam';
 import Model from './Model';
+import { image } from '@tensorflow/tfjs';
 
 const Pose = styled.div`
     font-size: 3rem;
@@ -30,16 +31,23 @@ const SoloGame = () => {
     const [countdown, setCountdown] = useState(10);
     const WS_URL = "ws://127.0.0.1:5555";
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL);
-    const [currentPose, setCurrentPose] = useState('');
-    const [poseList, setPoseList] = useState(["T Pose", "T Pose + Knee", "Flex Pose"]);
+    const [currentPose, setCurrentPose] = useState('T Pose');
+    const [poseList, setPoseList] = useState(["T Pose", "T + Knee Pose", "Flex Pose", "Warrior Pose", "L Pose"]);
     const [success, setSuccess] = useState(false);
     const { trackId } = useParams();
     const wallSpeed = 12;
     const audioRef = useRef();
     const [initialWallCreated, setInitialWallCreated] = useState(false);
     const numImage = 2;
-    const webcamRef = useRef(null);
     const [points, setPoints] = useState(0);
+
+    const imageMap = {
+        "T Pose" : require('./Images/pose1.jpg'), 
+        "Flex Pose" : require('./Images/pose2.jpg'), 
+        "T + Knee Pose": require('./Images/pose4.jpg'),
+        "Warrior Pose": require('./Images/pose3.jpg'),
+        "L Pose": require('./Images/pose5.jpg'),
+    }
 
     const toggleMusic = () => {
         if (audioRef.current.paused) {
@@ -89,7 +97,7 @@ const SoloGame = () => {
 
     useEffect(() => {
         if (!initialWallCreated) {
-            setWalls([{ id: 1, size: 10, imageId: getRandomImagePath() }]);
+            setWalls([{ id: 1, size: 10, imageId: imageMap[currentPose] }]);
             setInitialWallCreated(true);
         }
     }, [initialWallCreated]);
@@ -114,21 +122,28 @@ const SoloGame = () => {
         if (lastWall.size >= 1000) {
             setIsGrowing(false);
             setTimeout(() => {
-                setWalls((currentWalls) => {
-                    const newWalls = currentWalls.slice(1);
-                    const newImageId = getRandomImagePath();
-                    newWalls.push({ id: lastWall.id + 1, size: 10, imageId: newImageId });
-                    return newWalls;
-                });
                 setCountdown(10);
                 setIsGrowing(true);
                 setSuccess(false);
-                if (lastJsonMessage?.label === currentPose) {
+                if (lastJsonMessage?.label === currentPose && success === true) {
                     setPoints((prevPoints) => prevPoints + 1);
                 }
+                setCurrentPose(poseList[Math.floor(Math.random() * poseList.length)]);
             }, 3000);
         }
     }, [walls]);
+
+    useEffect(() => {
+        const lastWall = walls[walls.length - 1];
+        if (lastWall.size >= 1000) {
+        setWalls((currentWalls) => {
+            const newWalls = currentWalls.slice(1);
+            const newImageId = imageMap[currentPose];
+            newWalls.push({ id: lastWall.id + 1, size: 10, imageId: newImageId });
+            return newWalls;
+        });
+    }
+    }, [currentPose]);
 
     return (
         <div className="sologame">
