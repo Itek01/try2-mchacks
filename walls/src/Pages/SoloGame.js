@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { Rings } from 'react-loader-spinner';
 import Webcam from 'react-webcam';
 import Model from './Model';
+import GameOver from './GameOver'; // Import your GameOverScreen component
 
 const Pose = styled.div`
     font-size: 3rem;
@@ -57,7 +58,24 @@ const SoloGame = () => {
 
     const handleBackToMenu = () => {
         // Navigate back to the menu page when the button is clicked
-        navigate('/choosetrack'); // Replace '/menu' with the actual URL of your menu page
+        navigate('/menu'); // Replace '/menu' with the actual URL of your menu page
+    };
+
+    const [gameOver, setGameOver] = useState(true);
+    const handlePlayAgainClick = () => {
+        // Reset game state or perform any necessary actions
+        setGameOver(false); // Hide the game over screen
+        if (audioRef.current) {
+            audioRef.current.play().catch((e) => {
+                console.error("Playback failed:", e);
+            });
+        }
+    };
+
+    // Function to handle game over events
+    const handleGameOver = () => {
+        setGameOver(true);
+        // Add any game over logic here
     };
 
     useEffect(() => {
@@ -138,6 +156,14 @@ const SoloGame = () => {
 
     return (
         <div className="sologame">
+            {gameOver ? ( // Conditionally render the game over screen
+                <GameOver score={100} onPlayAgainClick={handlePlayAgainClick} />
+            ) : (
+                // Render your game content here
+                <>
+                    {/* Your game content */}
+                </>
+            )}
             <button className="back-to-menu-button" onClick={handleBackToMenu}>
                 Back to Menu
             </button>
