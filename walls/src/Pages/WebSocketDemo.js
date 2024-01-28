@@ -30,7 +30,7 @@ export const WebSocketDemo = () => {
     // Run when a new WebSocket message is received (lastJsonMessage)
     useEffect(() => {
         console.log(`Got a new message: ${lastJsonMessage?.toString()}`)
-        if (lastJsonMessage === currentPose) {
+        if (lastJsonMessage?.label === currentPose) {
             // Pose matches, go to next pose
             console.log("Pose matched, go to next pose")
             // Implement logic to go to the next pose here
@@ -64,7 +64,7 @@ export const WebSocketDemo = () => {
   
     // Run when a new WebSocket message is received (lastJsonMessage)
     useEffect(() => {
-      console.log(`Got a new message: ${lastJsonMessage?.toString()}`)
+      console.log(`Got a new message: `, lastJsonMessage)
     }, [lastJsonMessage])
 
     return (
@@ -75,7 +75,7 @@ export const WebSocketDemo = () => {
           {/* Add your UI elements to display or send data */}
           <p>Countdown: {countdown}</p> {/* Display the countdown */}
             <p>Current Pose: {currentPose}</p> {/* Display the current pose */}
-          <p>Last Message: {message}</p>
+          <p>Last Message: {lastJsonMessage?.label}</p>
           <p>success status: {success}</p>
         </div>
       );
