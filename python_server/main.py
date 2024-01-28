@@ -2,6 +2,10 @@ import math
 import zmq
 import cv2
 import numpy as np
+import socket
+import json
+import websockets
+import asyncio
 from time import time
 import mediapipe as mp
 import matplotlib.pyplot as plt
@@ -165,7 +169,7 @@ def classifyPose(landmarks, output_image, display=False):
 
     # Initialize the label of the pose. It is not known at this stage.
     #Unknown pose
-    label = 0
+    label = 'Unknown Pose'
 
     # Specify the color (Red) with which the label will be written on the image.
     color = (0, 0, 255)
@@ -220,11 +224,12 @@ def classifyPose(landmarks, output_image, display=False):
             if left_knee_angle > 160 and left_knee_angle < 205 and right_knee_angle > 160 and right_knee_angle < 205 and left_hip_angle > 170 and left_hip_angle < 190 and right_hip_angle > 170 and right_hip_angle < 190:
                 # Specify the label of the pose that is tree pose.
                 #tree pose
-                label = 1
+                label = "T Pose"
+                #label = 1
 
             if 240 < left_knee_angle < 300 and 130 < left_hip_angle < 220:
                 #'T + Knee Pose'
-                label = 2
+                label = 'T + Knee Pose'
 
 
         if left_elbow_angle > 50 and left_elbow_angle < 120 and right_elbow_angle > 230 and right_elbow_angle < 310:
@@ -232,12 +237,12 @@ def classifyPose(landmarks, output_image, display=False):
             if left_knee_angle > 150 and left_knee_angle < 205 and right_knee_angle > 150 and right_knee_angle < 205 and left_hip_angle > 170 and left_hip_angle < 190 and right_hip_angle > 170 and right_hip_angle < 190:
                 # Specify the label of the pose that is tree pose.
                 # 'Flexin Pose'
-                label = 3
+                label = 'Flexin Pose'
 
 
 
 
-    if label != 0:
+    if label != 'Unknown Pose':
         # Update the color (to green) with which the label will be written on the image.
         color = (0, 255, 0)
 
@@ -295,7 +300,7 @@ def classifyPose(landmarks, output_image, display=False):
         color = (0, 255, 0)
 
         # Write the label on the output image.
-    cv2.putText(output_image, label, (10, 30), cv2.FONT_HERSHEY_PLAIN, 2, color, 2)
+#    cv2.putText(output_image, label, (10, 30), cv2.FONT_HERSHEY_PLAIN, 2, color, 2)
 
     # Check if the resultant image is specified to be displayed.
     if display:
@@ -312,7 +317,7 @@ def classifyPose(landmarks, output_image, display=False):
         return output_image, label
 
 
-def vid_detection_classification(socket):
+async def vid_detection_classification(websocket):
 
 
     # Setup Pose function for video.
@@ -353,8 +358,17 @@ def vid_detection_classification(socket):
         if landmarks:
             # Perform the Pose Classification.
             frame, label = classifyPose(landmarks, frame, display=False)
-            bytes_to_send = label.tobytes()
-            socket.send(bytes_to_send)
+            bytes_to_send = str.encode(label)
+            if label != 'Unknown Pose':
+                try:
+                    jsonData = {
+                        "label": label
+                    }
+                    #client_socket.send(bytes_to_send)
+                    await websocket.send(json.dumps(jsonData))
+                    print(bytes_to_send)
+                except ValueError:
+                    print("error")
 
 
         # Display the frame.
@@ -375,11 +389,27 @@ def vid_detection_classification(socket):
 
 
 
+async def serve():
+
+   async with websockets.serve(vid_detection_classification, "localhost", 5555):
+        await  asyncio.Future()
+
+
+
+
+
+
 if __name__ == '__main__':
 
-    context = zmq.Context()
-    socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:5555")
+    # context = zmq.Context()
+    # socket = context.socket(zmq.REP)
+    # socket.bind("tcp://*:5555")
+
+    # server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # server.bind(('127.0.0.1', 5555))
+    # server.listen(5)
+
+    print(f"Server listening on port {5555}...")
 
     mp_pose = mp.solutions.pose
 
@@ -389,7 +419,15 @@ if __name__ == '__main__':
     # Initializing mediapipe drawing class, useful for annotation.
     mp_drawing = mp.solutions.drawing_utils
 
-    vid_detection_classification(socket)
+
+    asyncio.run(serve())
+
+   # asyncio.get_event_loop().run_until_complete(serve())
+
+    #
+    # while True:
+    #     client_socket, addr = server.accept()
+    #     vid_detection_classification(client_socket)
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
