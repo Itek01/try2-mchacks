@@ -186,7 +186,7 @@ const SoloGame = () => {
     return (
         <div className="sologame">
             {gameOver ? ( // Conditionally render the game over screen
-                <GameOver score={100} onPlayAgainClick={handlePlayAgainClick} />
+                <GameOver score={points} onPlayAgainClick={handlePlayAgainClick} />
             ) : (
                 // Render your game content here
                 <>
