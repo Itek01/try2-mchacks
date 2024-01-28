@@ -11,10 +11,15 @@
 }
 
 .sologame .wall {
-    background-color: #ffafcc; /* A playful pink color for the wall */
+    /* background-color: #ffafcc; */
     border-radius: 20px; /* Rounded corners */
     transition: width 0.1s ease-in-out, height 0.1s ease-in-out; /* Smooth transitions for size changes */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* A subtle shadow for depth */
+    background-size: cover; /* or contain, depending on your needs */
+    background-position: center;
+    background-repeat: no-repeat;
+    min-width: 50px; /* Minimum width so the image can be visible */
+  min-height: 50px;
 }
 
 .sologame button {
