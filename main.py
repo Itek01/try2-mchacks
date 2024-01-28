@@ -3,6 +3,9 @@ import zmq
 import cv2
 import numpy as np
 import socket
+import json
+import websockets
+import asyncio
 from time import time
 import mediapipe as mp
 import matplotlib.pyplot as plt
@@ -314,7 +317,7 @@ def classifyPose(landmarks, output_image, display=False):
         return output_image, label
 
 
-def vid_detection_classification():
+async def vid_detection_classification(websocket):
 
 
     # Setup Pose function for video.
@@ -358,12 +361,12 @@ def vid_detection_classification():
             bytes_to_send = str.encode(label)
             if label != 'Unknown Pose':
                 try:
-
-                    server_address = ('127.0.0.1', 5555)
-                    client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    client_socket.sendto(bytes_to_send, server_address)
+                    jsonData = {
+                        "label": label
+                    }
+                    #client_socket.send(bytes_to_send)
+                    await websocket.send(json.dumps(jsonData))
                     print(bytes_to_send)
-
                 except ValueError:
                     print("error")
 
@@ -386,11 +389,27 @@ def vid_detection_classification():
 
 
 
+async def serve():
+
+   async with websockets.serve(vid_detection_classification, "localhost", 5555):
+        await  asyncio.Future()
+
+
+
+
+
+
 if __name__ == '__main__':
 
     # context = zmq.Context()
     # socket = context.socket(zmq.REP)
     # socket.bind("tcp://*:5555")
+
+    # server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # server.bind(('127.0.0.1', 5555))
+    # server.listen(5)
+
+    print(f"Server listening on port {5555}...")
 
     mp_pose = mp.solutions.pose
 
@@ -400,7 +419,15 @@ if __name__ == '__main__':
     # Initializing mediapipe drawing class, useful for annotation.
     mp_drawing = mp.solutions.drawing_utils
 
-    vid_detection_classification()
+
+    asyncio.run(serve())
+
+   # asyncio.get_event_loop().run_until_complete(serve())
+
+    #
+    # while True:
+    #     client_socket, addr = server.accept()
+    #     vid_detection_classification(client_socket)
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
