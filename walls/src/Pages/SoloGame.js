@@ -16,6 +16,14 @@ const Pose = styled.div`
     transform: translateX(-50%);
 `;
 
+const Points = styled.div`
+    font-size: 7rem;
+    color: #ffff;
+    position: absolute;
+    top: 5%;
+    right: 10%;
+`;
+
 const SoloGame = () => {
     const [walls, setWalls] = useState([{ id: 1, size: 10 }]);
     const [isGrowing, setIsGrowing] = useState(true);
@@ -31,6 +39,7 @@ const SoloGame = () => {
     const [initialWallCreated, setInitialWallCreated] = useState(false);
     const numImage = 2;
     const webcamRef = useRef(null);
+    const [points, setPoints] = useState(0);
 
     const toggleMusic = () => {
         if (audioRef.current.paused) {
@@ -114,6 +123,9 @@ const SoloGame = () => {
                 setCountdown(10);
                 setIsGrowing(true);
                 setSuccess(false);
+                if (lastJsonMessage?.label === currentPose) {
+                    setPoints((prevPoints) => prevPoints + 1);
+                }
             }, 3000);
         }
     }, [walls]);
@@ -126,6 +138,7 @@ const SoloGame = () => {
                     ? 
                     <>
                     <div className="countdown">{countdown}</div>
+                    <Points>{points} pts</Points>
                         <Pose success={success}>{currentPose}</Pose>
                         <div className="walls-container">
                             {walls.map((wall, index) => (
