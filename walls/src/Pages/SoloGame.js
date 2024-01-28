@@ -1,24 +1,34 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Styling/SoloGame.css';
 import { useParams } from 'react-router-dom';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import styled from 'styled-components';
+import { Rings } from 'react-loader-spinner';
 
-// const tracks = [
-//     { id: 1, name: 'Track 1', audioUrl: './Sounds/Track1.mp3' },
-//     { id: 2, name: 'Track 2', audioUrl: './Sounds/Track2.mp3' },
-//     { id: 3, name: 'Track 3', audioUrl: './Sounds/Track3.mp3' },
-//     { id: 4, name: 'Track 4', audioUrl: './Sounds/Track4.mp3' }
-//     // Add more tracks as needed
-// ];
+const Pose = styled.div`
+    font-size: 3rem;
+    color: ${props => props.success ? 'green' : 'red'};
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+`;
 
 const SoloGame = () => {
     const [walls, setWalls] = useState([{ id: 1, size: 10 }]);
     const [isGrowing, setIsGrowing] = useState(true);
     const [countdown, setCountdown] = useState(10);
-    // const images = require.context('./Images', false, /\.(jpg|jpeg|png)$/);
-
+    const WS_URL = "ws://127.0.0.1:5555";
+    const [message, setMessage] = useState('');
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL);
+    const [currentPose, setCurrentPose] = useState('');
+    const [poseList, setPoseList] = useState(["T Pose", "T Pose + Knee", "Flex Pose"]);
+    const [success, setSuccess] = useState(false);
     const { trackId } = useParams();
     const wallSpeed = 12;
     const audioRef = useRef();
+    const [initialWallCreated, setInitialWallCreated] = useState(false);
+    const numImage = 2;
 
     const toggleMusic = () => {
         if (audioRef.current.paused) {
@@ -28,17 +38,46 @@ const SoloGame = () => {
         }
     };
 
-    const numImage = 2;
     const getRandomImagePath = () => {
         const randomId = Math.floor(Math.random() * numImage) + 1;
         return require(`./Images/pose${randomId}.jpg`);
     };
 
-    const [initialWallCreated, setInitialWallCreated] = useState(false);
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.play().catch((e) => {
+                console.error("Playback failed:", e);
+            });
+        }
+        // const countdownInterval = setInterval(() => {
+        //     setCountdown((prevCountdown) => prevCountdown > 0 ? prevCountdown - 1 : 0);
+        // }, 1000);
+        // return () => clearInterval(countdownInterval);
+    }, []);
+
+
+    useEffect(() => {
+        if (readyState === ReadyState.OPEN) {
+            setCurrentPose(poseList[Math.floor(Math.random() * poseList.length)]);
+            const timer = setInterval(() => {
+                setCountdown((prevCountdown) => prevCountdown - 1);
+            }, 1000);
+            return () => {
+                clearInterval(timer);
+            };
+        }
+    }, [readyState]);
+
+    useEffect(() => {
+        if (lastJsonMessage?.label === currentPose) {
+            setSuccess(true);
+        } else {
+            setSuccess(false);
+        }
+    }, [lastJsonMessage, currentPose]);
 
     useEffect(() => {
         if (!initialWallCreated) {
-            // Create the initial wall with a random image
             setWalls([{ id: 1, size: 10, imageId: getRandomImagePath() }]);
             setInitialWallCreated(true);
         }
@@ -55,7 +94,6 @@ const SoloGame = () => {
                     });
                 });
             }, 100);
-
             return () => clearInterval(interval);
         }
     }, [isGrowing]);
@@ -63,44 +101,29 @@ const SoloGame = () => {
     useEffect(() => {
         const lastWall = walls[walls.length - 1];
         if (lastWall.size >= 1000) {
-            setIsGrowing(false); // Stop the wall from growing
+            setIsGrowing(false);
             setTimeout(() => {
                 setWalls((currentWalls) => {
-                    // Remove the first wall and add a new wall
                     const newWalls = currentWalls.slice(1);
-                    const newImageId = getRandomImagePath(); // Get a new random image
+                    const newImageId = getRandomImagePath();
                     newWalls.push({ id: lastWall.id + 1, size: 10, imageId: newImageId });
                     return newWalls;
                 });
                 setCountdown(10);
-                setIsGrowing(true); // Start growing the new wall
-            }, 3000); // Wait for 3 seconds before replacing the wall
+                setIsGrowing(true);
+                setSuccess(false);
+            }, 3000);
         }
     }, [walls]);
 
-    useEffect(() => {
-        // const interval = setInterval(() => {
-        //     setWallSize(prevSize => prevSize + wallSpeed); // Grow the wall
-        // }, 100); // Change the size every 100 milliseconds
-
-        if (audioRef.current) {
-            audioRef.current.play().catch((e) => {
-                console.error("Playback failed:", e);
-            });
-        }
-
-        const countdownInterval = setInterval(() => {
-            setCountdown((prevCountdown) => prevCountdown > 0 ? prevCountdown - 1 : 0);
-        }, 1000);
-
-        return () => clearInterval(countdownInterval);
-
-        // return () => clearInterval(interval); // Cleanup interval on unmount
-    }, []);
-
     return (
         <div className="sologame">
-            <div className="countdown">{countdown}</div>
+            {
+                readyState === ReadyState.OPEN
+                    ? 
+                    <>
+                                <div className="countdown">{countdown}</div>
+            <Pose success={success}>{currentPose}</Pose>
             <div className="walls-container">
                 {walls.map((wall, index) => (
                     <div
@@ -109,15 +132,27 @@ const SoloGame = () => {
                         style={{
                             width: wall.size,
                             height: wall.size / 1.5,
-                            backgroundImage: `url(${wall.imageId})` // Set background image
+                            backgroundImage: `url(${wall.imageId})`
                         }}
                     ></div>
                 ))}
             </div>
             <div className="controls">
-            <audio ref={audioRef} src={require(`./Sounds/Track${trackId}.mp3`)} preload="auto" loop onError={(e) => console.log('Error loading audio:', e)} />
+                <audio ref={audioRef} src={require(`./Sounds/Track${trackId}.mp3`)} preload="auto" loop onError={(e) => console.log('Error loading audio:', e)} />
                 <button onClick={toggleMusic}>Toggle Music</button>
             </div>
+                    </>
+                    : 
+                    <Rings
+                    visible={true}
+                    height="80"
+                    width="80"
+                    color="#4fa94d"
+                    ariaLabel="rings-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                    />
+            }
         </div>
     );
 };
