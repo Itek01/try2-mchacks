@@ -3,6 +3,7 @@ import About from './Pages/About';
 import Home from './Pages/Home';
 import Menu from './Pages/Menu';
 import SoloGame from './Pages/SoloGame';
+import TrackChooser from './Pages/TrackChooser';
 
 function App() {
   return (
@@ -11,7 +12,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/menu" element={<Menu />} />
-        <Route path="/sologame" element={<SoloGame/>} />
+        <Route path="/sologame/:trackId" element={<SoloGame/>} />
+        <Route path="/choosetrack" element={<TrackChooser/>} />
+
       </Routes>
     </Router>
   );

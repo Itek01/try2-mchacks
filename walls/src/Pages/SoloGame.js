@@ -1,11 +1,22 @@
 import React, { useState, useEffect, useRef} from 'react';
-import './Styling/SoloGame.css'; // Create and import your CSS file for styling
+import './Styling/SoloGame.css';
+import { useParams } from 'react-router-dom';
+
+const tracks = [
+    { id: 1, name: 'Track 1', audioUrl: './Sounds/Track1.mp3' },
+    { id: 2, name: 'Track 2', audioUrl: './Sounds/Track2.mp3' },
+    { id: 3, name: 'Track 3', audioUrl: './Sounds/Track3.mp3' },
+    { id: 4, name: 'Track 4', audioUrl: './Sounds/Track4.mp3' }
+
+    // Add more tracks as needed
+];
 
 const SoloGame = () => {
     const [walls, setWalls] = useState([{ id: 1, size: 10 }]);
     const [isGrowing, setIsGrowing] = useState(true);
     const [countdown, setCountdown] = useState(10);
 
+    const { trackId } = useParams();
     const wallSpeed = 12;
     const audioRef = useRef();
 
@@ -79,7 +90,7 @@ const SoloGame = () => {
                 ))}
             </div>
             <div className="controls">
-                <audio ref={audioRef} src={require("./Sounds/Track1.mp3")} preload="auto" loop onError={(e) => console.log('Error loading audio:', e)} />
+            <audio ref={audioRef} src={require(`./Sounds/Track${trackId}.mp3`)} preload="auto" loop onError={(e) => console.log('Error loading audio:', e)} />
                 <button onClick={toggleMusic}>Toggle Music</button>
             </div>
         </div>

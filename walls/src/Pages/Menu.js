@@ -5,8 +5,12 @@ import { useNavigate } from 'react-router-dom';
 function Menu(){
     const navigate = useNavigate();
 
+    // const startGame = () => {
+    //     navigate('/sologame');
+    // };
+
     const startGame = () => {
-        navigate('/sologame');
+        navigate('/choosetrack');
     };
 
     return (
