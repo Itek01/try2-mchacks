@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Styling/SoloGame.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import styled from 'styled-components';
 import { Rings } from 'react-loader-spinner';
@@ -31,6 +31,7 @@ const SoloGame = () => {
     const [initialWallCreated, setInitialWallCreated] = useState(false);
     const numImage = 2;
     const webcamRef = useRef(null);
+    const navigate = useNavigate();
 
     const toggleMusic = () => {
         if (audioRef.current.paused) {
@@ -43,6 +44,11 @@ const SoloGame = () => {
     const getRandomImagePath = () => {
         const randomId = Math.floor(Math.random() * numImage) + 1;
         return require(`./Images/pose${randomId}.jpg`);
+    };
+
+    const handleBackToMenu = () => {
+        // Navigate back to the menu page when the button is clicked
+        navigate('/choosetrack'); // Replace '/menu' with the actual URL of your menu page
     };
 
     useEffect(() => {
@@ -120,6 +126,9 @@ const SoloGame = () => {
 
     return (
         <div className="sologame">
+            <button className="back-to-menu-button" onClick={handleBackToMenu}>
+                Back to Menu
+            </button>
             {
                 // readyState === ReadyState.OPEN
                 true
@@ -153,7 +162,7 @@ const SoloGame = () => {
                         />
                         <div className="controls">
                             <audio ref={audioRef} src={require(`./Sounds/Track${trackId}.mp3`)} preload="auto" loop onError={(e) => console.log('Error loading audio:', e)} />
-                            <button onClick={toggleMusic}>Toggle Music</button>
+                            <button onClick={toggleMusic} className='togglemusic'> Pause/Play</button>
                         </div>
                     </>
                     : 
