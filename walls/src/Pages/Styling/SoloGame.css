@@ -8,6 +8,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color: #8ecae6;
 }
 
 .sologame .wall {
@@ -23,7 +24,7 @@
     z-index: 10;
 }
 
-.sologame button {
+.controls .togglemusic {
     padding: 10px 20px;
     font-size: 1.2rem;
     margin-top: 20px;
@@ -36,7 +37,7 @@
     outline: none;
 }
 
-.sologame button:hover {
+.controls .togglemusic:hover {
     background-color: #ffd31d; /* A slightly darker color on hover */
 }
 
@@ -73,4 +74,21 @@
     left: 50%; /* Center horizontally */
     transform: translateX(-50%); /* Adjust for exact centering */
     z-index: 10; /* Ensure it's above other elements if needed */
+}
+
+.back-to-menu-button {
+    position: absolute;
+    top: 20px; /* Adjust the top position as needed */
+    right: 20px; /* Adjust the right position as needed */
+    padding: 10px 20px;
+    background-color: #E57373;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-to-menu-button:hover {
+    background-color: #C62828; /* Darker green on hover */
 }
