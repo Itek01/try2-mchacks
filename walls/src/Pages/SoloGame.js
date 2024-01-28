@@ -193,7 +193,7 @@ const SoloGame = () => {
                 Endless lives mode
             </button>
             {gameOver ? ( // Conditionally render the game over screen
-                <GameOver score={100} onPlayAgainClick={handlePlayAgainClick} />
+                <GameOver score={points} onPlayAgainClick={handlePlayAgainClick} />
             ) : (
                 // Render your game content here
                 <>
