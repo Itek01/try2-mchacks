@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Styling/SoloGame.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import styled from 'styled-components';
 import { Rings } from 'react-loader-spinner';
@@ -12,33 +12,35 @@ const Pose = styled.div`
     font-size: 3rem;
     color: ${props => props.success ? 'green' : 'red'};
     position: absolute;
-    top: 15%;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
 `;
 
 const Points = styled.div`
-    font-size: 7rem;
+    font-size: 5rem;
     color: #ffff;
     position: absolute;
     top: 5%;
-    right: 10%;
+    right: 5%;
 `;
 
 const SoloGame = () => {
     const [walls, setWalls] = useState([{ id: 1, size: 10 }]);
     const [isGrowing, setIsGrowing] = useState(true);
     const [countdown, setCountdown] = useState(10);
+    const [wallSpeed, setSpeed] = useState(12)
     const WS_URL = "ws://127.0.0.1:5555";
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL);
     const [currentPose, setCurrentPose] = useState('T Pose');
     const [poseList, setPoseList] = useState(["T Pose", "T + Knee Pose", "Flex Pose", "Warrior Pose", "L Pose"]);
     const [success, setSuccess] = useState(false);
     const { trackId } = useParams();
-    const wallSpeed = 12;
+    //onst wallSpeed = 12;
     const audioRef = useRef();
     const [initialWallCreated, setInitialWallCreated] = useState(false);
     const numImage = 2;
+    const navigate = useNavigate();
     const [points, setPoints] = useState(0);
 
     const imageMap = {
@@ -60,6 +62,11 @@ const SoloGame = () => {
     const getRandomImagePath = () => {
         const randomId = Math.floor(Math.random() * numImage) + 1;
         return require(`./Images/pose${randomId}.jpg`);
+    };
+
+    const handleBackToMenu = () => {
+        // Navigate back to the menu page when the button is clicked
+        navigate('/choosetrack'); // Replace '/menu' with the actual URL of your menu page
     };
 
     useEffect(() => {
@@ -131,7 +138,7 @@ const SoloGame = () => {
                 setCurrentPose(poseList[Math.floor(Math.random() * poseList.length)]);
             }, 3000);
         }
-    }, [walls]);
+    }, [walls, setSpeed]);
 
     useEffect(() => {
         const lastWall = walls[walls.length - 1];
@@ -147,14 +154,27 @@ const SoloGame = () => {
 
     return (
         <div className="sologame">
+            <button className="back-to-menu-button" onClick={handleBackToMenu}>
+                Back to Menu
+            </button>
             {
                 // readyState === ReadyState.OPEN
                 true
                     ? 
                     <>
-                    <div className="countdown">{countdown}</div>
+                    
                     <Points>{points} pts</Points>
-                        <Pose success={success}>{currentPose}</Pose>
+                    {!isGrowing && (
+                        <Pose success={success}>{success ? (
+                            <>
+                                <p>{["Good Job", "You Did It", "New High Score?"][Math.floor(Math.random() * 3)]}</p>
+                            </>
+                        ) : (
+                            <>
+                                <p>Good Try</p>
+                            </>
+                        )}</Pose>
+                    )}
                         <div className="walls-container">
                             {walls.map((wall, index) => (
                                 <div
@@ -181,7 +201,7 @@ const SoloGame = () => {
                         />
                         <div className="controls">
                             <audio ref={audioRef} src={require(`./Sounds/Track${trackId}.mp3`)} preload="auto" loop onError={(e) => console.log('Error loading audio:', e)} />
-                            <button onClick={toggleMusic}>Toggle Music</button>
+                            <button onClick={toggleMusic} className='togglemusic'> Pause/Play</button>
                         </div>
                     </>
                     : 
