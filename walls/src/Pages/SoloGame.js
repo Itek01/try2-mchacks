@@ -51,6 +51,7 @@ const SoloGame = () => {
     const navigate = useNavigate();
     const [points, setPoints] = useState(0);
     const [lives, setLives] = useState(3);
+    const [gameOver, setGameOver] = useState(false);
 
     const imageMap = {
         "T Pose" : require('./Images/pose1.jpg'), 
@@ -68,20 +69,16 @@ const SoloGame = () => {
         }
     };
 
-    const getRandomImagePath = () => {
-        const randomId = Math.floor(Math.random() * numImage) + 1;
-        return require(`./Images/pose${randomId}.jpg`);
-    };
 
     const handleBackToMenu = () => {
         // Navigate back to the menu page when the button is clicked
         navigate('/menu'); // Replace '/menu' with the actual URL of your menu page
     };
-
-    const [gameOver, setGameOver] = useState(true);
     const handlePlayAgainClick = () => {
         // Reset game state or perform any necessary actions
-        setGameOver(false); // Hide the game over screen
+        setGameOver(false);
+        setPoints(0);
+        setLives(3);
         if (audioRef.current) {
             audioRef.current.play().catch((e) => {
                 console.error("Playback failed:", e);
@@ -170,7 +167,7 @@ const SoloGame = () => {
 
     useEffect(() => {
         if (lives === 0) {
-            navigate('/gameover');
+            handleGameOver();
         }
     }, [lives]);
 
