@@ -31,9 +31,11 @@ const CanvasStyled = styled.canvas`
 `;
 
 const CenteredDiv = styled.div`
-    /* display: flex;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
     justify-content: center;
-    align-items: center; */
+    align-items: center;
 `;
 
 function Model() {

@@ -1,19 +1,16 @@
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: #f5f5f5;
+html {
   height: 100%;
-  width: 100%;
 }
 
-#root {
+body {
   height: 100%;
-  width: 100%;
 }
 
+div#root {
+  height: 100%; /* remove this line to see div.app is no more 100% height */
+}
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+div.app {
+  height: 100%;
+  background-color: cornsilk;
 }
