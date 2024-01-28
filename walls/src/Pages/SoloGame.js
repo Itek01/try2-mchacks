@@ -11,30 +11,31 @@ const Pose = styled.div`
     font-size: 3rem;
     color: ${props => props.success ? 'green' : 'red'};
     position: absolute;
-    top: 15%;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
 `;
 
 const Points = styled.div`
-    font-size: 7rem;
+    font-size: 5rem;
     color: #ffff;
     position: absolute;
     top: 5%;
-    right: 10%;
+    right: 5%;
 `;
 
 const SoloGame = () => {
     const [walls, setWalls] = useState([{ id: 1, size: 10 }]);
     const [isGrowing, setIsGrowing] = useState(true);
     const [countdown, setCountdown] = useState(10);
+    const [wallSpeed, setSpeed] = useState(12)
     const WS_URL = "ws://127.0.0.1:5555";
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL);
     const [currentPose, setCurrentPose] = useState('');
-    const [poseList, setPoseList] = useState(["T Pose", "T Pose + Knee", "Flex Pose"]);
+    const [poseList, setPoseList] = useState(["T Pose", "T + Knee Pose", "Flex Pose"]);
     const [success, setSuccess] = useState(false);
     const { trackId } = useParams();
-    const wallSpeed = 12;
+    //onst wallSpeed = 12;
     const audioRef = useRef();
     const [initialWallCreated, setInitialWallCreated] = useState(false);
     const numImage = 2;
@@ -118,8 +119,10 @@ const SoloGame = () => {
                     const newWalls = currentWalls.slice(1);
                     const newImageId = getRandomImagePath();
                     newWalls.push({ id: lastWall.id + 1, size: 10, imageId: newImageId });
+                    
                     return newWalls;
                 });
+                setSpeed((prevSpeed) => prevSpeed + 2);
                 setCountdown(10);
                 setIsGrowing(true);
                 setSuccess(false);
@@ -128,7 +131,7 @@ const SoloGame = () => {
                 }
             }, 3000);
         }
-    }, [walls]);
+    }, [walls, setSpeed]);
 
     return (
         <div className="sologame">
@@ -137,9 +140,19 @@ const SoloGame = () => {
                 true
                     ? 
                     <>
-                    <div className="countdown">{countdown}</div>
+                    
                     <Points>{points} pts</Points>
-                        <Pose success={success}>{currentPose}</Pose>
+                    {!isGrowing && (
+                        <Pose success={success}>{success ? (
+                            <>
+                                <p>{["Good Job", "You Did It", "New High Score?"][Math.floor(Math.random() * 3)]}</p>
+                            </>
+                        ) : (
+                            <>
+                                <p>Good Try</p>
+                            </>
+                        )}</Pose>
+                    )}
                         <div className="walls-container">
                             {walls.map((wall, index) => (
                                 <div
